@@ -6,6 +6,7 @@
                  [compojure "1.5.1"]
                  [enlive "1.1.6"]
                  [hiccup "1.0.5"]
+                 [org.clojure/tools.logging "0.3.1"]
                  [ring/ring-defaults "0.2.1"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler open-michelin.handler/app}
