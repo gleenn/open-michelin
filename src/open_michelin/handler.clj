@@ -12,7 +12,8 @@
             [ring.middleware
              [refresh :refer [wrap-refresh]]
              [reload :refer [wrap-reload]]]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+            [clojure.set :as set]))
 
 (defn third [seq] (get seq 2))
 
@@ -40,28 +41,50 @@
        ;(filter #(not (seq (re-seq #"Related Maps" %))))
        ))
 
-(defn respond [req]
+(defn layout [& bodies]
+  (hiccup/html5 [:head
+                 [:style
+                  (str ".left { float: left; }"
+                       ".right { float: right; }"
+                       ".third { width: 33%; }"
+                       )
+                  ]]
+                [:body
+                 [:div [:h1 "Open Michelin"]
+                  (for [body bodies]
+                    body)
+                  ]]))
+
+(defn handle-search [req]
   (let [query (-> req :params :q edn/read-string)]
-    (hiccup/html5 [:head]
-                  [:body
-                   [:div [:h1 "Open Michelin"]
-                    [:form {:action "/"}
-                     "Search:"
-                     [:input {:name "q" :value query :autofocus true}]
-                     [:input {:type "submit"}]
-                     ]
-                    [:br]
-                    [:div {:class "restaurants"}
-                     (for [restaurant (vec (michelin-restaurant-names query))]
-                       [:div {:style "background-color: #eee; margin: 10px; padding: 5px"}
-                        [:div (:name restaurant)]
-                        [:div (:stars restaurant)]
-                        [:div (:address restaurant)]
-                        ])]
-                    ]])))
+    (layout [:form {:action "/"}
+             "Search:"
+             [:input {:name "q" :value query :autofocus true}]
+             [:input {:type "submit"}]
+             ]
+            [:br]
+            [:div {:class "restaurants"}
+             (for [restaurant (vec (michelin-restaurant-names query))]
+               [:div {:style "background-color: #eee; margin: 10px; padding: 5px"}
+                [:div (:name restaurant)]
+                [:div (:stars restaurant)]
+                [:div (:address restaurant)]
+                ])])))
+
+
+(def michelin-star-restaurant-names #{"Acquerello" "Adega" "Al's Place" "Aster" "Atelier Crenn" "Auberge du Soleil" "Aziza" "Baumé" "Benu" "Bouchon" "Californios" "Campton Place Restaurant; Bistro & Bar" "Chez TJ" "Coi" "Commis" "Commonwealth" "Farmhouse Inn Restaurant" "Gary Danko" "Hashiri" "jū-ni" "Keiko à Nob Hill" "Kin Khao" "La Toque Restaurant" "Lazy Bear" "Lord Stanley" "Luce" "Madera" "Madrona Manor" "Manresa" "Michael Mina" "Mister Jiu's" "Mosu" "Mourad" "Nico" "Octavia" "OMAKASE" "Plumed Horse" "Quince" "Rasa" "Saison" "Solbar at Solage Calistoga" "Sons & Daughters" "SPQR" "Spruce" "State Bird Provisions" "Sushi Yoshizumi" "Terra Restaurant" "Terrapin Creek Cafe" "The French Laundry" "The Progress" "The Restaurant at Meadowood" "The Village Pub" "Wako" "Wakuriya"})
+(defn handle-intersection [req]
+  (layout
+    [:div.left.third
+     [:ul
+      (for [name (sort (vec (set/intersection michelin-star-restaurant-names)))]
+        [:li name])]]
+    [:div.left.third
+     "Hi I'm a third"]))
 
 (defroutes app-routes
-           (GET "/" [] respond)
+           (GET "/" [] handle-search)
+           (GET "/intersection" [] handle-intersection)
            (route/not-found "Not Found"))
 
 (def app
