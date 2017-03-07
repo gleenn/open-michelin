@@ -73,14 +73,25 @@
 
 
 (def michelin-star-restaurant-names #{"Acquerello" "Adega" "Al's Place" "Aster" "Atelier Crenn" "Auberge du Soleil" "Aziza" "Baumé" "Benu" "Bouchon" "Californios" "Campton Place Restaurant; Bistro & Bar" "Chez TJ" "Coi" "Commis" "Commonwealth" "Farmhouse Inn Restaurant" "Gary Danko" "Hashiri" "jū-ni" "Keiko à Nob Hill" "Kin Khao" "La Toque Restaurant" "Lazy Bear" "Lord Stanley" "Luce" "Madera" "Madrona Manor" "Manresa" "Michael Mina" "Mister Jiu's" "Mosu" "Mourad" "Nico" "Octavia" "OMAKASE" "Plumed Horse" "Quince" "Rasa" "Saison" "Solbar at Solage Calistoga" "Sons & Daughters" "SPQR" "Spruce" "State Bird Provisions" "Sushi Yoshizumi" "Terra Restaurant" "Terrapin Creek Cafe" "The French Laundry" "The Progress" "The Restaurant at Meadowood" "The Village Pub" "Wako" "Wakuriya"})
+(def available-restaurant-names (set ["Luce - InterContinental San Francisco" "Roka Akor - San Francisco" "5A5 Steak Lounge" "Rich Table" "Spruce" "Coqueta" "The Cavalier" "Roka Akor - San Francisco" "Trou Normand" "Park Tavern" "Bob's Steak & Chop House - San Francisco" "Ristorante Milano" "Waterbar" "PABU" "Black Cat" "Hog and Rocks" "Luce - InterContinental San Francisco" "Barcha" "Blue Plate" "The Rotunda at Neiman Marcus - San Francisco" "Foreign Cinema" "A16 - San Francisco" "Catch" "Big 4 Restaurant" "Delfina Restaurant" "Aatxe" "Fringale" "Lolinda" "Venticello" "Cassava" "RN74" "Trace" "BIX" "Anchor and Hope" "Grill at the St. Regis" "Central Kitchen" "Chaya Brasserie" "Blowfish Sushi - SF" "The Waterfront Restaurant and Cafe" "Town Hall" "North Beach Restaurant" "Prospect" "Garibaldi's on Presidio" "Jardiniere" "Baonecci Ristorante" "Gaspar Brasserie" "La Mar Cebicheria Peruana" "Bobo's" "Mission Beach Cafe" "25 Lusk" "Greens Restaurant" "District - San Francisco" "Fior D'Italia" "Alioto's" "Cesario's" "Pane e Vino Trattoria" "Sam’s Grill & Seafood Restaurant" "The Perennial" "Alfred's Steakhouse" "TamashiSoul Sushi Bar" "Ruth's Chris Steak House - San Francisco" "Mochica" "Daily Grill - San Francisco" "Le Colonial - SF" "Laurel Court Restaurant & Bar - Fairmont San Francisco" "Hayes Street Grill" "Fogo de Chao Brazilian Steakhouse - San Francisco" "Farina" "John's Grill" "FOG CITY" "One Market Restaurant" "Old Bus Tavern" "Roy's - San Francisco" "Sens Restaurant" "Ideale" "Osso Steakhouse" "L'Ottavo - San Francisco" "Palio d'Asti" "McCormick & Kuleto's Seafood Restaurant" "Rosa Mexicano - San Francisco" "Tartine Manufactory" "Zingari Ristorante" "Chart House Restaurant - San Francisco" "Gold Mirror Italian Restaurant" "August (1) Five" "OneUP Restaurant & Lounge at Grand Hyatt San Francisco" "Urban Tavern" "Level III" "New Delhi Restaurant" "Fondue Cowboy" "750 Restaurant & Bar" "Rooh" "The Keystone" "Taste on Ellis"]))
 (defn handle-intersection [req]
   (layout
     [:div.left.third
      [:ul
-      (for [name (sort (vec (set/intersection michelin-star-restaurant-names)))]
+      [:li [:h1 "Michelin Star Restaurants"]]
+      (for [name (sort michelin-star-restaurant-names)]
         [:li name])]]
     [:div.left.third
-     "Hi I'm a third"]))
+     [:ul
+      [:li [:h1 "Available on 3/13"]]
+      (for [name (sort available-restaurant-names)]
+        [:li name])]]
+    [:div.left.third
+     [:ul
+      [:li [:h1 "Intersection"]]
+      (for [name (sort (vec (set/intersection available-restaurant-names michelin-star-restaurant-names)))]
+        [:li name])]]
+    ))
 
 (defroutes app-routes
            (GET "/" [] handle-search)
